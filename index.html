@@ -2,13 +2,17 @@
 <html lang="id">
   <head>
     <script>
-      // 1. Auto-redirect to trailing slash for GitHub Pages to prevent relative base blank screen
+      // 1. Auto-redirect to trailing slash for GitHub Pages to prevent relative base blank screen.
+      // Checks for real file extensions rather than just presence of a dot, so repos like 'tn.timbu_web' redirect properly.
       if (
         window.location.hostname.endsWith('.github.io') &&
-        !window.location.pathname.endsWith('/') &&
-        !window.location.pathname.split('/').pop().includes('.')
+        !window.location.pathname.endsWith('/')
       ) {
-        window.location.replace(window.location.origin + window.location.pathname + '/' + window.location.search + window.location.hash);
+        var lastSegment = window.location.pathname.split('/').pop() || '';
+        var hasFileExtension = /\.(html|htm|js|css|json|png|jpg|jpeg|gif|svg|ico|webp|woff2?|ttf|eot|xml|txt)$/i.test(lastSegment);
+        if (!hasFileExtension) {
+          window.location.replace(window.location.origin + window.location.pathname + '/' + window.location.search + window.location.hash);
+        }
       }
     </script>
     <meta charset="UTF-8" />

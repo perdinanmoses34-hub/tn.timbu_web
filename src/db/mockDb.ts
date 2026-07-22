@@ -614,40 +614,48 @@ export class MockDatabase {
   static async loadFromServer() {
     this.initRealtimeListener();
 
-    // 1. Try Express API backend if available
-    try {
-      const res = await fetch(`/api/db?t=${Date.now()}`);
-      if (res.ok) {
-        const json = await res.json();
-        if (json.success && json.data) {
-          const dbData = json.data;
-          Object.keys(dbData).forEach((key) => {
-            if (dbData[key] !== undefined && dbData[key] !== null) {
-              if (Array.isArray(dbData[key]) && dbData[key].length === 0) {
-                const local = localStorage.getItem(`church_cms_${key}`);
-                if (local) {
-                  try {
-                    const parsedLocal = JSON.parse(local);
-                    if (Array.isArray(parsedLocal) && parsedLocal.length > 0) {
-                      return; // preserve local non-empty data if server returns empty
-                    }
-                  } catch (e) {}
+    // 1. Try Express API backend if available (skip on static hosts like GitHub Pages)
+    const isStaticHost = typeof window !== 'undefined' && (
+      window.location.hostname.endsWith('.github.io') || 
+      window.location.hostname.endsWith('.app') ||
+      window.location.protocol === 'file:'
+    );
+
+    if (!isStaticHost) {
+      try {
+        const res = await fetch(`/api/db?t=${Date.now()}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            const dbData = json.data;
+            Object.keys(dbData).forEach((key) => {
+              if (dbData[key] !== undefined && dbData[key] !== null) {
+                if (Array.isArray(dbData[key]) && dbData[key].length === 0) {
+                  const local = localStorage.getItem(`church_cms_${key}`);
+                  if (local) {
+                    try {
+                      const parsedLocal = JSON.parse(local);
+                      if (Array.isArray(parsedLocal) && parsedLocal.length > 0) {
+                        return; // preserve local non-empty data if server returns empty
+                      }
+                    } catch (e) {}
+                  }
                 }
+                localStorage.setItem(`church_cms_${key}`, JSON.stringify(dbData[key]));
               }
-              localStorage.setItem(`church_cms_${key}`, JSON.stringify(dbData[key]));
+            });
+            if (this.onSyncCallback) {
+              this.onSyncCallback();
             }
-          });
-          if (this.onSyncCallback) {
-            this.onSyncCallback();
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new Event('church_db_updated'));
+            }
+            return true;
           }
-          if (typeof window !== 'undefined') {
-            window.dispatchEvent(new Event('church_db_updated'));
-          }
-          return true;
         }
+      } catch (e) {
+        // Ignore Express fetch error, fallback to Firestore
       }
-    } catch (e) {
-      // Ignore Express fetch error, fallback to Firestore
     }
 
     // 2. Direct client-side Firestore load (Works on GitHub Pages & mobile devices directly!)
@@ -696,15 +704,23 @@ export class MockDatabase {
           activity_logs: this.getLogs(),
         };
 
-        // 1. Try Express server API
-        try {
-          await fetch("/api/db", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(fullBackup),
-          });
-        } catch (e) {
-          // Ignore Express error, fallback to client Firestore
+        // 1. Try Express server API if not static host
+        const isStaticHost = typeof window !== 'undefined' && (
+          window.location.hostname.endsWith('.github.io') || 
+          window.location.hostname.endsWith('.app') ||
+          window.location.protocol === 'file:'
+        );
+
+        if (!isStaticHost) {
+          try {
+            await fetch("/api/db", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(fullBackup),
+            });
+          } catch (e) {
+            // Ignore Express error, fallback to client Firestore
+          }
         }
 
         // 2. Save directly to Firestore Cloud Database (Syncs to all devices globally!)

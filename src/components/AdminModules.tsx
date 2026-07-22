@@ -1253,7 +1253,36 @@ export default function AdminModules({
                 </div>
               </div>
 
-              <button type="submit" className="w-full py-2.5 bg-brand text-white font-bold text-xs rounded-xl shadow-md cursor-pointer">Simpan Jadwal Ibadah</button>
+              <div className="flex items-center gap-2 pt-3">
+                <button type="submit" className="flex-1 py-2.5 bg-brand text-white font-bold text-xs rounded-xl shadow-md cursor-pointer hover:bg-brand-dark transition-colors flex items-center justify-center gap-1.5">
+                  <Check className="w-4 h-4" /> Simpan Jadwal Ibadah
+                </button>
+                {editingItem.id && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm(`Yakin ingin menghapus jadwal "${editingItem.title || 'ini'}"?`)) {
+                        handleDeleteSchedule(editingItem.id);
+                        setEditingItem(null);
+                        setIsCreatingNew(false);
+                      }
+                    }}
+                    className="px-4 py-2.5 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 font-bold text-xs rounded-xl transition-colors cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Trash2 className="w-4 h-4" /> Hapus Jadwal
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingItem(null);
+                    setIsCreatingNew(false);
+                  }}
+                  className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs rounded-xl transition-colors cursor-pointer"
+                >
+                  Batal
+                </button>
+              </div>
             </form>
           )}
 
@@ -1497,33 +1526,52 @@ export default function AdminModules({
           {/* Kelola Jadwal Ibadah */}
           {activeTab === 'admin_schedules' && !editingItem && (
             <div className="space-y-4">
-              <div className="p-4 bg-amber-50/20 border border-amber-200/50 rounded-2xl flex items-center justify-between">
+              <div className="p-4 bg-amber-50/20 border border-amber-200/50 rounded-2xl flex items-center justify-between flex-wrap gap-2">
                 <div>
-                  <h4 className="font-bold text-xs text-amber-900 uppercase">Jadwal Ibadah Terhubung</h4>
-                  <p className="text-[11px] text-amber-700">Perubahan jadwal di sini akan langsung diperbarui pada Dashboard Jemaat.</p>
+                  <h4 className="font-bold text-xs text-amber-900 uppercase">Jadwal Ibadah Terhubung ({schedules.length})</h4>
+                  <p className="text-[11px] text-amber-700">Perubahan atau penghapusan jadwal di sini akan langsung diperbarui pada Dashboard Jemaat.</p>
                 </div>
-                <button
-                  onClick={() => {
-                    setIsCreatingNew(true);
-                    setEditingItem({
-                      id: `sch_${Date.now()}`,
-                      sessionName: 'Sesi Baru',
-                      title: 'Ibadah Raya',
-                      time: '07.00 WIB',
-                      speaker: 'Pdt. Dr. Samuel Wijaya',
-                      worshipLeader: 'Sdr. David Haryono',
-                      location: 'Main Sanctuary (Lt. 1)',
-                      category: 'Ibadah Raya',
-                      dateDay: 'Setiap Hari Minggu',
-                      isOnline: false,
-                      notes: ''
-                    });
-                    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className="px-3.5 py-2 bg-brand text-white text-xs font-bold rounded-xl flex items-center gap-1 hover:bg-brand-dark transition-colors cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" /> Tambah Jadwal
-                </button>
+                <div className="flex items-center gap-2">
+                  {schedules.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (confirm('Apakah Anda yakin ingin MENGHAPUS SEMUA jadwal ibadah? Langkah ini akan membersihkan seluruh jadwal agar tidak menumpuk di dashboard jemaat.')) {
+                          schedules.forEach((sch) => {
+                            MockDatabase.deleteSchedule(sch.id, currentUser);
+                          });
+                          loadAllData();
+                          alert('Seluruh jadwal ibadah berhasil dibersihkan!');
+                        }
+                      }}
+                      className="px-3.5 py-2 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs font-bold rounded-xl flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Bersihkan Semua Jadwal
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      setIsCreatingNew(true);
+                      setEditingItem({
+                        id: `sch_${Date.now()}`,
+                        sessionName: 'Sesi Baru',
+                        title: 'Ibadah Raya',
+                        time: '07.00 WIB',
+                        speaker: 'Pdt. Dr. Samuel Wijaya',
+                        worshipLeader: 'Sdr. David Haryono',
+                        location: 'Main Sanctuary (Lt. 1)',
+                        category: 'Ibadah Raya',
+                        dateDay: 'Setiap Hari Minggu',
+                        isOnline: false,
+                        notes: ''
+                      });
+                      if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="px-3.5 py-2 bg-brand text-white text-xs font-bold rounded-xl flex items-center gap-1 hover:bg-brand-dark transition-colors cursor-pointer shadow-sm"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Tambah Jadwal
+                  </button>
+                </div>
               </div>
 
               {schedules.length === 0 ? (

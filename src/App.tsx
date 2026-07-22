@@ -136,6 +136,11 @@ export default function App() {
     }
   }, [darkMode]);
 
+  const currentUserRef = React.useRef(currentUser);
+  useEffect(() => {
+    currentUserRef.current = currentUser;
+  }, [currentUser]);
+
   // Background Database Load and Sync Hook
   useEffect(() => {
     // Register callback to update React state when db changes
@@ -143,9 +148,10 @@ export default function App() {
       setSettings(MockDatabase.getSettings());
       const updatedUsers = MockDatabase.getUsers();
       setAllUsers(updatedUsers);
-      if (currentUser) {
-        const freshUser = updatedUsers.find(u => u.id === currentUser.id);
-        if (freshUser) {
+      const curr = currentUserRef.current;
+      if (curr) {
+        const freshUser = updatedUsers.find(u => u.id === curr.id);
+        if (freshUser && JSON.stringify(freshUser) !== JSON.stringify(curr)) {
           setCurrentUser(freshUser);
         }
       }
@@ -163,7 +169,7 @@ export default function App() {
     }, 10000);
 
     return () => clearInterval(interval);
-  }, [currentUser]);
+  }, []);
 
   // Apply Dynamic Primary Color to the DOM
   useEffect(() => {

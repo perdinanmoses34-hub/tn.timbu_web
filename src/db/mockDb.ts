@@ -1133,7 +1133,9 @@ export class MockDatabase {
     });
 
     if (changed) {
-      this.setStored('users', users);
+      try {
+        localStorage.setItem('church_cms_users', JSON.stringify(users));
+      } catch (e) {}
     }
     return users;
   }
@@ -1276,7 +1278,9 @@ export class MockDatabase {
       const coolYouth = DEFAULT_EVENTS.find((e) => e.id === 'cool_youth_fellowship_id');
       if (coolYouth) {
         events.unshift(coolYouth);
-        this.setStored('events', events);
+        try {
+          localStorage.setItem('church_cms_events', JSON.stringify(events));
+        } catch (e) {}
       }
     }
     return events;
@@ -1314,7 +1318,9 @@ export class MockDatabase {
   static getSchedules(): ServiceSchedule[] {
     const raw = this.getStored('service_schedules', DEFAULT_SCHEDULES);
     if (!raw || !Array.isArray(raw)) {
-      this.setStored('service_schedules', DEFAULT_SCHEDULES);
+      try {
+        localStorage.setItem('church_cms_service_schedules', JSON.stringify(DEFAULT_SCHEDULES));
+      } catch (e) {}
       return DEFAULT_SCHEDULES;
     }
     return raw;
@@ -1340,13 +1346,24 @@ export class MockDatabase {
     );
   }
 
-  static deleteSchedule(id: string, actor: { id: string; name: string; role: Role }) {
+  static deleteSchedule(id: string, actor?: { id: string; name: string; role: Role }) {
     const items = this.getSchedules();
-    const before = items.find((i) => i.id === id);
-    if (!before) return;
+    const targetId = String(id).trim();
+    const before = items.find((i) => String(i.id).trim() === targetId);
 
-    this.setStored('service_schedules', items.filter((i) => i.id !== id));
-    this.addLog(actor, 'DELETE_SCHEDULE', JSON.stringify(before), undefined);
+    const filtered = items.filter((i) => String(i.id).trim() !== targetId);
+    this.setStored('service_schedules', filtered);
+
+    const safeActor = actor || { id: 'usr_admin', name: 'Admin', role: 'ADMIN' as Role };
+    if (before) {
+      this.addLog(safeActor, 'DELETE_SCHEDULE', JSON.stringify(before), undefined);
+    }
+  }
+
+  static clearAllSchedules(actor?: { id: string; name: string; role: Role }) {
+    this.setStored('service_schedules', []);
+    const safeActor = actor || { id: 'usr_admin', name: 'Admin', role: 'ADMIN' as Role };
+    this.addLog(safeActor, 'CLEAR_ALL_SCHEDULES', undefined, 'All service schedules cleared');
   }
 
   static getEventRegistrations(): EventRegistration[] {
@@ -1643,13 +1660,14 @@ export class MockDatabase {
   }
 
   static addLog(
-    actor: { id: string; name: string; role: Role },
-    action: string,
+    actor?: { id: string; name: string; role: Role },
+    action?: string,
     beforeData?: string,
     afterData?: string,
     status: 'success' | 'failed' = 'success'
   ) {
     const logs = this.getLogs();
+    const safeActor = actor || { id: 'usr_admin', name: 'System Admin', role: 'ADMIN' as Role };
     const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown Browser';
     let device = 'Desktop';
     if (/Mobi|Android|iPhone/i.test(userAgent)) {
@@ -1668,10 +1686,10 @@ export class MockDatabase {
 
     const newLog: ActivityLog = {
       id: `log_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
-      userId: actor.id,
-      userName: actor.name,
-      role: actor.role,
-      action,
+      userId: safeActor.id,
+      userName: safeActor.name,
+      role: safeActor.role,
+      action: action || 'ACTION',
       ip: '127.0.0.1 (Local Client)',
       browser,
       device,

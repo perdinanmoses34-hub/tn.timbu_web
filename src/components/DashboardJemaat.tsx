@@ -1057,9 +1057,7 @@ export default function DashboardJemaat({
                 <button
                   onClick={() => {
                     if (confirm('Apakah Anda yakin ingin MENGHAPUS SEMUA jadwal ibadah? Langkah ini akan membersihkan seluruh jadwal agar tidak menumpuk.')) {
-                      schedules.forEach((sch) => {
-                        MockDatabase.deleteSchedule(sch.id, currentUser);
-                      });
+                      MockDatabase.clearAllSchedules(currentUser);
                       loadAllData();
                       showToast('Seluruh jadwal ibadah berhasil dibersihkan!', 'success');
                     }

@@ -1,0 +1,6 @@
+{
+  "name": "Church Management System",
+  "description": "Comprehensive, multi-role Church Management System featuring member databases, announcements, schedules, devotions, events, gallery, and notification hubs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,12 @@
+{
+  "firestore": [
+    {
+      "database": "(default)",
+      "rules": "firestore.rules"
+    },
+    {
+      "database": "ai-studio-supercoding-05cba2b8-9e7c-4257-bfb6-5f3525816084",
+      "rules": "firestore.rules"
+    }
+  ]
+}

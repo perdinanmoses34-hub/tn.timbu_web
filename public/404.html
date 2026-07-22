@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Church Management System - Redirecting</title>
+    <script>
+      // Single Page Application redirect fallback for GitHub Pages
+      var path = window.location.pathname;
+      var repo = path.split('/')[1];
+      if (repo) {
+        window.location.replace(window.location.origin + '/' + repo + '/');
+      } else {
+        window.location.replace(window.location.origin + '/');
+      }
+    </script>
+  </head>
+  <body style="background-color: #0f172a; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif;">
+    <p>Memuat Sistem Informasi Gereja...</p>
+  </body>
+</html>

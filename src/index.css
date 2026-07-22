@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-brand: var(--church-primary, #0f766e);
+  --color-brand-light: var(--church-primary-light, #eaf2f1);
+  --color-brand-dark: var(--church-primary-dark, #115e59);
+}
+
+/* Custom styles for high-end feel */
+body {
+  font-family: var(--font-sans);
+  background-color: #f8fafc;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Glassmorphism */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-effect-dark {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Smooth Transitions */
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Thin Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Hide scrollbars but keep scrolling */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide iOS safe area problems */
+.safe-padding-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Custom animation classes */
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+  100% { transform: scale(0.95); opacity: 0.5; }
+}
+
+.pulse-circle {
+  animation: pulse-ring 2s infinite ease-in-out;
+}
+
+/* Custom Rich Text Content wrapper */
+.rich-text-content p {
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+.rich-text-content blockquote {
+  border-left: 4px solid var(--color-brand);
+  padding-left: 1rem;
+  font-style: italic;
+  color: #475569;
+  margin: 1rem 0;
+}

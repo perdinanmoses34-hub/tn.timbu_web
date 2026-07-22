@@ -1,0 +1,38 @@
+{
+  "short_name": "ChurchCMS",
+  "name": "Aplikasi CMS Gereja Indonesia",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1548625361-155de0cbb10a?w=192&auto=format&fit=crop&q=80",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1548625361-155de0cbb10a?w=512&auto=format&fit=crop&q=80",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "./",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "display": "standalone",
+  "display_override": ["standalone", "fullscreen", "minimal-ui"],
+  "orientation": "portrait",
+  "shortcuts": [
+    {
+      "name": "Jadwal Ibadah",
+      "short_name": "Jadwal",
+      "url": "./?shortcut=jadwal",
+      "icons": [{ "src": "https://images.unsplash.com/photo-1548625361-155de0cbb10a?w=96&auto=format&fit=crop&q=80", "sizes": "96x96" }]
+    },
+    {
+      "name": "Renungan Harian",
+      "short_name": "Renungan",
+      "url": "./?shortcut=renungan",
+      "icons": [{ "src": "https://images.unsplash.com/photo-1548625361-155de0cbb10a?w=96&auto=format&fit=crop&q=80", "sizes": "96x96" }]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <script>
+      // 1. Auto-redirect to trailing slash for GitHub Pages to prevent relative base blank screen
+      if (
+        window.location.hostname.endsWith('.github.io') &&
+        !window.location.pathname.endsWith('/') &&
+        !window.location.pathname.split('/').pop().includes('.')
+      ) {
+        window.location.replace(window.location.origin + window.location.pathname + '/' + window.location.search + window.location.hash);
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Church Management System - CMS</title>
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="ChurchCMS" />
+    <link rel="apple-touch-icon" href="https://images.unsplash.com/photo-1548625361-155de0cbb10a?w=192&auto=format&fit=crop&q=80" />
+    <link rel="manifest" href="./manifest.json" />
+    <!-- Favicon link -->
+    <link rel="icon" type="image/png" href="https://images.unsplash.com/photo-1548625361-155de0cbb10a?w=32&auto=format&fit=crop&q=80" />
+    <!-- Google Fonts: Inter for general text, Space Grotesk for headings -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body class="bg-gray-50 text-gray-900 antialiased overflow-x-hidden selection:bg-teal-500 selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

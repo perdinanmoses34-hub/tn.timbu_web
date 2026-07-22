@@ -132,6 +132,21 @@ export default function AdminModules({
   const [users, setUsers] = useState<User[]>([]);
   const [schedules, setSchedules] = useState<ServiceSchedule[]>([]);
 
+  // Toast notification state
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
+  const showToast = (message: string, type: 'success' | 'info' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3500);
+  };
+
+  // Custom non-blocking Delete Confirmation Modal state
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    type: 'schedule' | 'clear_all_schedules' | 'news' | 'announcement' | 'devotion' | 'event' | 'congregation' | 'gallery' | 'ministry' | 'organization' | 'user';
+    id?: string;
+    title?: string;
+  } | null>(null);
+
   // Editing forms state
   const [editingItem, setEditingItem] = useState<any>(null);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
@@ -242,11 +257,8 @@ export default function AdminModules({
     loadAllData();
   };
 
-  const handleDeleteNews = (id: string) => {
-    if (confirm('Yakin ingin menghapus berita ini?')) {
-      MockDatabase.deleteNews(id, currentUser);
-      loadAllData();
-    }
+  const handleDeleteNews = (id: string, title?: string) => {
+    setDeleteModal({ isOpen: true, type: 'news', id, title: title || 'Berita ini' });
   };
 
   // ANNOUNCEMENTS ACTIONS
@@ -257,13 +269,11 @@ export default function AdminModules({
     setIsCreatingNew(false);
     setEditingItem(null);
     loadAllData();
+    showToast('Pengumuman berhasil disimpan!', 'success');
   };
 
-  const handleDeleteAnnouncement = (id: string) => {
-    if (confirm('Yakin ingin menghapus pengumuman ini?')) {
-      MockDatabase.deleteAnnouncement(id, currentUser);
-      loadAllData();
-    }
+  const handleDeleteAnnouncement = (id: string, title?: string) => {
+    setDeleteModal({ isOpen: true, type: 'announcement', id, title: title || 'Pengumuman ini' });
   };
 
   // DEVOTIONS ACTIONS
@@ -274,13 +284,11 @@ export default function AdminModules({
     setIsCreatingNew(false);
     setEditingItem(null);
     loadAllData();
+    showToast('Renungan berhasil disimpan!', 'success');
   };
 
-  const handleDeleteDevotion = (id: string) => {
-    if (confirm('Yakin ingin menghapus renungan ini?')) {
-      MockDatabase.deleteDevotion(id, currentUser);
-      loadAllData();
-    }
+  const handleDeleteDevotion = (id: string, title?: string) => {
+    setDeleteModal({ isOpen: true, type: 'devotion', id, title: title || 'Renungan ini' });
   };
 
   // EVENTS ACTIONS
@@ -291,13 +299,11 @@ export default function AdminModules({
     setIsCreatingNew(false);
     setEditingItem(null);
     loadAllData();
+    showToast('Event berhasil disimpan!', 'success');
   };
 
-  const handleDeleteEvent = (id: string) => {
-    if (confirm('Yakin ingin menghapus event ini?')) {
-      MockDatabase.deleteEvent(id, currentUser);
-      loadAllData();
-    }
+  const handleDeleteEvent = (id: string, title?: string) => {
+    setDeleteModal({ isOpen: true, type: 'event', id, title: title || 'Event ini' });
   };
 
   // SCHEDULE ACTIONS
@@ -323,17 +329,66 @@ export default function AdminModules({
     setIsCreatingNew(false);
     setEditingItem(null);
     loadAllData();
-    alert(`Jadwal "${item.title}" berhasil disimpan!`);
+    showToast(`Jadwal "${item.title}" berhasil disimpan!`, 'success');
   };
 
-  const handleDeleteSchedule = (id: string, title?: string) => {
-    const confirmMsg = title
-      ? `Apakah Anda yakin ingin MENGHAPUS jadwal "${title}"?`
-      : 'Yakin ingin menghapus jadwal ibadah ini?';
-    if (confirm(confirmMsg)) {
+  const handleDeleteSchedule = (id: string, title?: string, skipConfirm = false) => {
+    if (skipConfirm) {
       MockDatabase.deleteSchedule(id, currentUser);
       loadAllData();
+      showToast(`Jadwal "${title || ''}" berhasil dihapus.`, 'success');
+    } else {
+      setDeleteModal({
+        isOpen: true,
+        type: 'schedule',
+        id,
+        title: title || 'Jadwal Ibadah',
+      });
     }
+  };
+
+  // Master Delete Confirmation Executor
+  const handleConfirmDelete = () => {
+    if (!deleteModal) return;
+    const { type, id, title } = deleteModal;
+
+    if (type === 'schedule' && id) {
+      MockDatabase.deleteSchedule(id, currentUser);
+      showToast(`Jadwal "${title || ''}" berhasil dihapus!`, 'success');
+    } else if (type === 'clear_all_schedules') {
+      MockDatabase.clearAllSchedules(currentUser);
+      showToast('Seluruh jadwal ibadah berhasil dibersihkan!', 'success');
+    } else if (type === 'news' && id) {
+      MockDatabase.deleteNews(id, currentUser);
+      showToast('Berita berhasil dihapus.', 'success');
+    } else if (type === 'announcement' && id) {
+      MockDatabase.deleteAnnouncement(id, currentUser);
+      showToast('Pengumuman berhasil dihapus.', 'success');
+    } else if (type === 'devotion' && id) {
+      MockDatabase.deleteDevotion(id, currentUser);
+      showToast('Renungan berhasil dihapus.', 'success');
+    } else if (type === 'event' && id) {
+      MockDatabase.deleteEvent(id, currentUser);
+      showToast('Event berhasil dihapus.', 'success');
+    } else if (type === 'congregation' && id) {
+      MockDatabase.deleteCongregation(id, currentUser);
+      showToast('Data jemaat berhasil dihapus.', 'success');
+    } else if (type === 'gallery' && id) {
+      MockDatabase.deleteGallery(id, currentUser);
+      showToast('Gambar galeri berhasil dihapus.', 'success');
+    } else if (type === 'ministry' && id) {
+      MockDatabase.deleteMinistry(id, currentUser);
+      showToast('Data pelayanan berhasil dihapus.', 'success');
+    } else if (type === 'organization' && id) {
+      MockDatabase.deleteOrganization(id, currentUser);
+      showToast('Data organisasi berhasil dihapus.', 'success');
+    } else if (type === 'user' && id) {
+      MockDatabase.deleteUser(id, currentUser);
+      showToast('Akun pengguna berhasil dihapus.', 'success');
+    }
+
+    loadAllData();
+    setDeleteModal(null);
   };
 
   const handleManualCheckIn = (e: React.FormEvent) => {
@@ -1598,11 +1653,11 @@ export default function AdminModules({
                     <button
                       type="button"
                       onClick={() => {
-                        if (confirm('Apakah Anda yakin ingin MENGHAPUS SEMUA jadwal ibadah? Langkah ini akan membersihkan seluruh jadwal agar tidak menumpuk di dashboard jemaat.')) {
-                          MockDatabase.clearAllSchedules(currentUser);
-                          loadAllData();
-                          alert('Seluruh jadwal ibadah berhasil dibersihkan!');
-                        }
+                        setDeleteModal({
+                          isOpen: true,
+                          type: 'clear_all_schedules',
+                          title: 'SEMUA Jadwal Ibadah'
+                        });
                       }}
                       className="px-3.5 py-2 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
                     >
@@ -3297,6 +3352,59 @@ export default function AdminModules({
             </div>
           )}
       </div>
+
+      {/* Toast Notification Banner */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 animate-bounce-short">
+          <div className={`px-4 py-3 rounded-2xl shadow-xl border flex items-center gap-3 text-xs font-bold ${
+            toast.type === 'success' ? 'bg-emerald-600 text-white border-emerald-500' :
+            toast.type === 'error' ? 'bg-red-600 text-white border-red-500' :
+            'bg-slate-800 text-white border-slate-700'
+          }`}>
+            <span>{toast.message}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Delete Confirmation Modal Overlay */}
+      {deleteModal?.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-gray-100 space-y-4">
+            <div className="flex items-center gap-3 text-red-600">
+              <div className="p-3 bg-red-100 rounded-2xl">
+                <Trash2 className="w-6 h-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-gray-900 text-lg">Konfirmasi Hapus</h3>
+                <p className="text-xs text-gray-500">Tindakan ini tidak dapat dibatalkan.</p>
+              </div>
+            </div>
+
+            <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-2xl border border-gray-100">
+              {deleteModal.type === 'clear_all_schedules'
+                ? 'Apakah Anda yakin ingin MENGHAPUS SEMUA jadwal ibadah? Seluruh daftar jadwal akan dibersihkan dari sistem.'
+                : `Apakah Anda yakin ingin menghapus "${deleteModal.title || 'item ini'}"?`}
+            </p>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setDeleteModal(null)}
+                className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer shadow-md flex items-center gap-1.5"
+              >
+                <Trash2 className="w-3.5 h-3.5" /> Ya, Hapus Sekarang
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

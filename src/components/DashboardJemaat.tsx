@@ -157,6 +157,27 @@ export default function DashboardJemaat({
     }, 4000);
   };
 
+  // Custom non-blocking Delete Schedule Modal state
+  const [deleteScheduleModal, setDeleteScheduleModal] = useState<{
+    isOpen: boolean;
+    isAll?: boolean;
+    id?: string;
+    title?: string;
+  } | null>(null);
+
+  const handleConfirmDeleteScheduleJemaat = () => {
+    if (!deleteScheduleModal) return;
+    if (deleteScheduleModal.isAll) {
+      MockDatabase.clearAllSchedules(currentUser);
+      showToast('Seluruh jadwal ibadah berhasil dibersihkan!', 'success');
+    } else if (deleteScheduleModal.id) {
+      MockDatabase.deleteSchedule(deleteScheduleModal.id, currentUser);
+      showToast(`Jadwal "${deleteScheduleModal.title || ''}" berhasil dihapus.`, 'success');
+    }
+    loadAllData();
+    setDeleteScheduleModal(null);
+  };
+
   // Schedule Reminders tracking from localStorage (fixes "Ingatkan Saya" button)
   const [reminders, setReminders] = useState<Record<string, boolean>>(() => {
     try {
@@ -1056,11 +1077,11 @@ export default function DashboardJemaat({
               {schedules.length > 0 && (
                 <button
                   onClick={() => {
-                    if (confirm('Apakah Anda yakin ingin MENGHAPUS SEMUA jadwal ibadah? Langkah ini akan membersihkan seluruh jadwal agar tidak menumpuk.')) {
-                      MockDatabase.clearAllSchedules(currentUser);
-                      loadAllData();
-                      showToast('Seluruh jadwal ibadah berhasil dibersihkan!', 'success');
-                    }
+                    setDeleteScheduleModal({
+                      isOpen: true,
+                      isAll: true,
+                      title: 'Seluruh Jadwal Ibadah'
+                    });
                   }}
                   className="px-3.5 py-2 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
                 >
@@ -1094,11 +1115,11 @@ export default function DashboardJemaat({
                             </span>
                             <button
                               onClick={() => {
-                                if (confirm(`Yakin ingin menghapus jadwal "${sch.title}" agar tidak menumpuk?`)) {
-                                  MockDatabase.deleteSchedule(sch.id, currentUser);
-                                  loadAllData();
-                                  showToast(`Jadwal "${sch.title}" berhasil dihapus.`, 'success');
-                                }
+                                setDeleteScheduleModal({
+                                  isOpen: true,
+                                  id: sch.id,
+                                  title: sch.title
+                                });
                               }}
                               title="Hapus Jadwal Ini"
                               className="p-1 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors cursor-pointer border border-red-100"
@@ -1138,11 +1159,11 @@ export default function DashboardJemaat({
 
                         <button
                           onClick={() => {
-                            if (confirm(`Yakin ingin menghapus jadwal "${sch.title}"?`)) {
-                              MockDatabase.deleteSchedule(sch.id, currentUser);
-                              loadAllData();
-                              showToast(`Jadwal "${sch.title}" berhasil dihapus.`, 'success');
-                            }
+                            setDeleteScheduleModal({
+                              isOpen: true,
+                              id: sch.id,
+                              title: sch.title
+                            });
                           }}
                           title="Hapus Jadwal"
                           className="px-3 py-2.5 bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs rounded-xl transition-colors cursor-pointer border border-red-200 flex items-center gap-1"
@@ -2556,6 +2577,46 @@ export default function DashboardJemaat({
             </div>
           )}
         </AnimatePresence>
+
+        {/* Custom Delete Confirmation Modal Overlay */}
+        {deleteScheduleModal?.isOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+            <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-gray-100 space-y-4">
+              <div className="flex items-center gap-3 text-red-600">
+                <div className="p-3 bg-red-100 rounded-2xl">
+                  <Trash2 className="w-6 h-6 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-gray-900 text-lg">Konfirmasi Hapus</h3>
+                  <p className="text-xs text-gray-500">Tindakan ini tidak dapat dibatalkan.</p>
+                </div>
+              </div>
+
+              <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                {deleteScheduleModal.isAll
+                  ? 'Apakah Anda yakin ingin MENGHAPUS SEMUA jadwal ibadah? Seluruh daftar jadwal akan dibersihkan.'
+                  : `Apakah Anda yakin ingin menghapus jadwal "${deleteScheduleModal.title || 'ini'}"?`}
+              </p>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setDeleteScheduleModal(null)}
+                  className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmDeleteScheduleJemaat}
+                  className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer shadow-md flex items-center gap-1.5"
+                >
+                  <Trash2 className="w-3.5 h-3.5" /> Ya, Hapus Sekarang
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Custom Toast Notification */}
         {toast && (

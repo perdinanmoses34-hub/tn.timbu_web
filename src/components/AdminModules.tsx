@@ -307,14 +307,14 @@ export default function AdminModules({
     
     const item: ServiceSchedule = {
       id: editingItem.id || `sch_${Date.now()}`,
-      sessionName: editingItem.sessionName || 'Sesi Baru',
-      title: editingItem.title || 'Ibadah Raya',
-      time: editingItem.time || '07.00 WIB',
-      speaker: editingItem.speaker || '',
-      worshipLeader: editingItem.worshipLeader || '',
-      location: editingItem.location || 'Main Sanctuary (Lt. 1)',
+      sessionName: editingItem.sessionName ? editingItem.sessionName.trim() : 'Sesi Ibadah',
+      title: editingItem.title ? editingItem.title.trim() : 'Ibadah Raya',
+      time: editingItem.time ? editingItem.time.trim() : '07.00 WIB',
+      speaker: editingItem.speaker ? editingItem.speaker.trim() : '',
+      worshipLeader: editingItem.worshipLeader ? editingItem.worshipLeader.trim() : '',
+      location: editingItem.location ? editingItem.location.trim() : 'Main Sanctuary (Lt. 1)',
       category: editingItem.category || 'Ibadah Raya',
-      dateDay: editingItem.dateDay || 'Setiap Hari Minggu',
+      dateDay: editingItem.dateDay ? editingItem.dateDay.trim() : 'Setiap Hari Minggu',
       isOnline: !!editingItem.isOnline,
       notes: editingItem.notes || ''
     };
@@ -323,6 +323,7 @@ export default function AdminModules({
     setIsCreatingNew(false);
     setEditingItem(null);
     loadAllData();
+    alert(`Jadwal "${item.title}" berhasil disimpan!`);
   };
 
   const handleDeleteSchedule = (id: string) => {
@@ -1554,11 +1555,11 @@ export default function AdminModules({
                       setIsCreatingNew(true);
                       setEditingItem({
                         id: `sch_${Date.now()}`,
-                        sessionName: 'Sesi Baru',
-                        title: 'Ibadah Raya',
-                        time: '07.00 WIB',
-                        speaker: 'Pdt. Dr. Samuel Wijaya',
-                        worshipLeader: 'Sdr. David Haryono',
+                        sessionName: '',
+                        title: '',
+                        time: '',
+                        speaker: '',
+                        worshipLeader: '',
                         location: 'Main Sanctuary (Lt. 1)',
                         category: 'Ibadah Raya',
                         dateDay: 'Setiap Hari Minggu',

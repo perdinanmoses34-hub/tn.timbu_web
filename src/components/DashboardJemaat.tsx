@@ -601,23 +601,38 @@ export default function DashboardJemaat({
         <div className="space-y-8 animate-fade-in bg-[#070B14] p-6 -mx-6 md:-mx-8 -my-6 md:-my-8 min-h-screen text-slate-100">
           {/* Hero Welcome Banner */}
           <div className="bg-gradient-to-r from-[#1E3A8A] via-[#3B82F6] to-[#F59E0B] rounded-3xl p-6 md:p-10 text-white relative overflow-hidden shadow-2xl border border-blue-500/10 min-h-[220px] flex items-center">
+            {/* Banner Background Image Overlay */}
+            {settings.bannerUrl ? (
+              <div className="absolute inset-0 z-0 overflow-hidden">
+                <img
+                  src={settings.bannerUrl}
+                  alt="Banner Gereja"
+                  className="w-full h-full object-cover object-center opacity-35 scale-105"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#070B14]/90 via-[#0F172A]/80 to-[#1E3A8A]/70 backdrop-blur-[1px]" />
+              </div>
+            ) : (
+              <div className="absolute -top-10 -left-10 w-48 h-48 bg-white/5 rounded-full blur-2xl pointer-events-none" />
+            )}
+
             {/* Watermark Heart / Decorative Background elements */}
-            <div className="absolute right-6 bottom-0 top-0 w-1/3 opacity-15 pointer-events-none hidden md:block">
+            <div className="absolute right-6 bottom-0 top-0 w-1/3 opacity-15 pointer-events-none hidden md:block z-0">
               <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full text-white">
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
               </svg>
             </div>
-            <div className="absolute -top-10 -left-10 w-48 h-48 bg-white/5 rounded-full blur-2xl pointer-events-none" />
             
             <div className="relative z-10 space-y-4">
-              <span className="bg-white/15 border border-white/25 px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest text-white backdrop-blur-md">
-                Sistem Informasi Gereja (CMS)
+              <span className="bg-white/15 border border-white/25 px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest text-white backdrop-blur-md inline-flex items-center gap-1.5">
+                <Church className="w-3 h-3 text-amber-300" />
+                {settings.churchName || 'GBI ROCK JUANDA'}
               </span>
               <h2 className="font-display font-black text-2xl md:text-4xl tracking-tight uppercase text-white drop-shadow-md">
-                Selamat Datang di {settings.churchName || 'SYSTEM MANAGEMENT CHURCH (CMS)'}
+                {settings.jemaatWelcomeTitle || `SELAMAT DATANG DI ${settings.churchName || 'GBI ROCK JUANDA'}`}
               </h2>
               <p className="text-xs md:text-sm text-slate-100/90 leading-relaxed max-w-2xl font-medium">
-                Membangun jemaat yang bertumbuh, melayani dengan kasih, dan memuliakan nama Tuhan Yesus Kristus. Temukan informasi jadwal ibadah, warta jemaat, permohonan doa syafaat, serta salurkan persembahan kasih Anda melalui menu donasi.
+                {settings.jemaatWelcomeSubtext || 'Membangun jemaat yang bertumbuh, melayani dengan kasih, dan memuliakan nama Tuhan Yesus Kristus. Temukan informasi jadwal ibadah, warta jemaat, permohonan doa syafaat, serta salurkan persembahan kasih Anda melalui menu donasi.'}
               </p>
             </div>
           </div>
@@ -761,6 +776,29 @@ export default function DashboardJemaat({
                     </p>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Banner Gambar Website Utama (Promotional / Event Flyer Banner) */}
+          {settings.bannerUrl && (
+            <div className="bg-[#0F172A]/90 border border-slate-800/80 p-5 rounded-3xl space-y-3 shadow-xl overflow-hidden relative group">
+              <div className="flex items-center justify-between">
+                <span className="bg-indigo-500/20 text-indigo-300 text-[10px] font-extrabold px-3 py-1 rounded-full border border-indigo-500/30 uppercase tracking-widest flex items-center gap-1.5">
+                  <ImageIcon className="w-3.5 h-3.5 text-indigo-400" />
+                  Banner Website Utama & Flyer Gereja
+                </span>
+                <span className="text-[10px] text-slate-400 font-semibold">
+                  {settings.churchName || 'GBI ROCK JUANDA'}
+                </span>
+              </div>
+              <div className="relative rounded-2xl overflow-hidden border border-slate-700/60 max-h-[360px] bg-slate-950 flex items-center justify-center">
+                <img
+                  src={settings.bannerUrl}
+                  alt="Banner Utama Gereja"
+                  className="w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-500"
+                  referrerPolicy="no-referrer"
+                />
               </div>
             </div>
           )}

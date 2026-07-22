@@ -54,6 +54,8 @@ const DEFAULT_SETTINGS: ChurchSettings = {
   qrisUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=SYSTEM_MANAGEMENT_CHURCH_OFFERING',
   adminWelcomeText: 'Selamat Datang, Admin Pelayanan!',
   adminSubText: 'Sistem Informasi Manajemen dan Pelayanan CMS. Kelola berita, kustomisasi donasi, moderasi komentar, dan kelola jajaran organisasi secara instan.',
+  jemaatWelcomeTitle: 'SELAMAT DATANG DI GBI ROCK JUANDA',
+  jemaatWelcomeSubtext: 'Membangun jemaat yang bertumbuh, melayani dengan kasih, dan memuliakan nama Tuhan Yesus Kristus. Temukan informasi jadwal ibadah, warta jemaat, permohonan doa syafaat, serta salurkan persembahan kasih Anda melalui menu donasi.',
   googleSheetUrl: '',
 };
 

@@ -214,6 +214,8 @@ export interface ChurchSettings {
   qrisUrl?: string;
   adminWelcomeText?: string;
   adminSubText?: string;
+  jemaatWelcomeTitle?: string;
+  jemaatWelcomeSubtext?: string;
   googleSheetUrl?: string;
   customMenus?: Array<{ id: string; label: string; visible: boolean }>;
 }

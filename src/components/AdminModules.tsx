@@ -611,6 +611,8 @@ export default function AdminModules({
   const [qrisUrl, setQrisUrl] = useState(settings.qrisUrl || '');
   const [adminWelcomeText, setAdminWelcomeText] = useState(settings.adminWelcomeText || '');
   const [adminSubText, setAdminSubText] = useState(settings.adminSubText || '');
+  const [jemaatWelcomeTitle, setJemaatWelcomeTitle] = useState(settings.jemaatWelcomeTitle || '');
+  const [jemaatWelcomeSubtext, setJemaatWelcomeSubtext] = useState(settings.jemaatWelcomeSubtext || '');
   const [newMenuLabel, setNewMenuLabel] = useState('');
 
   // Ref to track last synced settings string to prevent wiping user input during polling
@@ -643,6 +645,8 @@ export default function AdminModules({
       setQrisUrl(settings.qrisUrl || '');
       setAdminWelcomeText(settings.adminWelcomeText || '');
       setAdminSubText(settings.adminSubText || '');
+      setJemaatWelcomeTitle(settings.jemaatWelcomeTitle || '');
+      setJemaatWelcomeSubtext(settings.jemaatWelcomeSubtext || '');
     }
   }, [settings]);
 
@@ -719,6 +723,8 @@ export default function AdminModules({
       qrisUrl,
       adminWelcomeText,
       adminSubText,
+      jemaatWelcomeTitle,
+      jemaatWelcomeSubtext,
       customMenus,
     };
     
@@ -756,6 +762,8 @@ export default function AdminModules({
       setQrisUrl(res.qrisUrl || '');
       setAdminWelcomeText(res.adminWelcomeText || '');
       setAdminSubText(res.adminSubText || '');
+      setJemaatWelcomeTitle(res.jemaatWelcomeTitle || '');
+      setJemaatWelcomeSubtext(res.jemaatWelcomeSubtext || '');
       onSettingsSaved(res);
       window.dispatchEvent(new Event('church_db_updated'));
       alert('Pengaturan sistem berhasil dikembalikan ke default!');
@@ -2112,32 +2120,67 @@ export default function AdminModules({
               </div>
 
               {/* Welcome Banner Customization */}
-              <div className="bg-amber-50/60 p-4 rounded-2xl border border-amber-100 space-y-3">
-                <div className="flex items-center gap-2 text-amber-900">
-                  <Megaphone className="w-4 h-4 text-amber-600" />
-                  <span className="text-xs font-bold uppercase tracking-wider">Kustomisasi Banner Selamat Datang (Admin)</span>
-                </div>
-                <div className="grid grid-cols-1 gap-3">
-                  <div>
-                    <label className="block text-[10px] font-bold text-gray-700 uppercase">Judul Sapaan (Welcome Heading)</label>
-                    <input
-                      type="text"
-                      placeholder="Contoh: Selamat Datang, Pnt. Budi Santoso!"
-                      value={adminWelcomeText}
-                      onChange={(e) => setAdminWelcomeText(e.target.value)}
-                      className="w-full mt-1 p-2.5 border border-gray-200 rounded-xl text-xs bg-white focus:border-brand"
-                    />
-                    <p className="text-[9px] text-gray-400 mt-0.5">Jika dikosongkan, sapaan dinamis default sesuai nama akun login Anda akan digunakan.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Admin Welcome */}
+                <div className="bg-amber-50/60 p-4 rounded-2xl border border-amber-100 space-y-3">
+                  <div className="flex items-center gap-2 text-amber-900">
+                    <Megaphone className="w-4 h-4 text-amber-600" />
+                    <span className="text-xs font-bold uppercase tracking-wider">Kustomisasi Sapaan Banner (Admin)</span>
                   </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-gray-700 uppercase">Subteks Deskripsi Banner</label>
-                    <textarea
-                      rows={2}
-                      placeholder="Masukkan subteks pengantar untuk sistem pelayanan..."
-                      value={adminSubText}
-                      onChange={(e) => setAdminSubText(e.target.value)}
-                      className="w-full mt-1 p-2.5 border border-gray-200 rounded-xl text-xs bg-white focus:border-brand"
-                    />
+                  <div className="grid grid-cols-1 gap-3">
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-700 uppercase">Judul Sapaan Admin</label>
+                      <input
+                        type="text"
+                        placeholder="Contoh: Selamat Datang, Pnt. Budi Santoso!"
+                        value={adminWelcomeText}
+                        onChange={(e) => setAdminWelcomeText(e.target.value)}
+                        className="w-full mt-1 p-2.5 border border-gray-200 rounded-xl text-xs bg-white focus:border-brand"
+                      />
+                      <p className="text-[9px] text-gray-400 mt-0.5">Jika dikosongkan, sapaan dinamis default sesuai nama akun login Anda akan digunakan.</p>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-700 uppercase">Subteks Deskripsi Banner Admin</label>
+                      <textarea
+                        rows={2}
+                        placeholder="Masukkan subteks pengantar untuk sistem pelayanan..."
+                        value={adminSubText}
+                        onChange={(e) => setAdminSubText(e.target.value)}
+                        className="w-full mt-1 p-2.5 border border-gray-200 rounded-xl text-xs bg-white focus:border-brand"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Jemaat Welcome */}
+                <div className="bg-blue-50/60 p-4 rounded-2xl border border-blue-100 space-y-3">
+                  <div className="flex items-center gap-2 text-blue-900">
+                    <Megaphone className="w-4 h-4 text-blue-600" />
+                    <span className="text-xs font-bold uppercase tracking-wider">Kustomisasi Banner Sapaan (Beranda Jemaat)</span>
+                  </div>
+                  <div className="grid grid-cols-1 gap-3">
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-700 uppercase">Judul Sapaan Jemaat (Hero Heading)</label>
+                      <input
+                        type="text"
+                        placeholder="Contoh: SELAMAT DATANG DI GBI ROCK JUANDA"
+                        value={jemaatWelcomeTitle}
+                        onChange={(e) => setJemaatWelcomeTitle(e.target.value)}
+                        className="w-full mt-1 p-2.5 border border-gray-200 rounded-xl text-xs bg-white focus:border-brand font-bold text-blue-950"
+                      />
+                      <p className="text-[9px] text-gray-500 mt-0.5">Teks judul yang tampil paling atas pada Dashboard Beranda Jemaat.</p>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-700 uppercase">Subteks / Visi Pelayanan (Hero Subtitle)</label>
+                      <textarea
+                        rows={2}
+                        placeholder="Contoh: Membangun jemaat yang bertumbuh, melayani dengan kasih..."
+                        value={jemaatWelcomeSubtext}
+                        onChange={(e) => setJemaatWelcomeSubtext(e.target.value)}
+                        className="w-full mt-1 p-2.5 border border-gray-200 rounded-xl text-xs bg-white focus:border-brand"
+                      />
+                      <p className="text-[9px] text-gray-500 mt-0.5">Teks deskripsi / slogan pelayanan yang tampil di bawah judul Jemaat.</p>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -385,6 +385,12 @@ export default function AdminModules({
     } else if (type === 'user' && id) {
       MockDatabase.deleteUser(id, currentUser);
       showToast('Akun pengguna berhasil dihapus.', 'success');
+    } else if (type === 'notification' && id) {
+      MockDatabase.deleteNotification(id, currentUser);
+      showToast(`Notifikasi "${title || ''}" berhasil dihapus.`, 'success');
+    } else if (type === 'clear_all_notifications') {
+      MockDatabase.clearAllNotifications(currentUser);
+      showToast('Seluruh riwayat notifikasi berhasil dibersihkan!', 'success');
     }
 
     loadAllData();
@@ -1978,10 +1984,11 @@ export default function AdminModules({
                     <button
                       type="button"
                       onClick={() => {
-                        if (confirm('Apakah Anda yakin ingin menghapus SELURUH riwayat notifikasi terkirim? Notifikasi tidak akan lagi muncul di dashboard jemaat.')) {
-                          MockDatabase.clearAllNotifications(currentUser);
-                          loadAllData();
-                        }
+                        setDeleteModal({
+                          isOpen: true,
+                          type: 'clear_all_notifications',
+                          title: 'SELURUH Riwayat Notifikasi Terkirim',
+                        });
                       }}
                       className="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-[10px] font-bold rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
                     >
@@ -2003,10 +2010,12 @@ export default function AdminModules({
                             <button
                               type="button"
                               onClick={() => {
-                                if (confirm(`Hapus notifikasi "${item.title}"? Notifikasi ini akan dihapus dari seluruh dashboard jemaat.`)) {
-                                  MockDatabase.deleteNotification(item.id, currentUser);
-                                  loadAllData();
-                                }
+                                setDeleteModal({
+                                  isOpen: true,
+                                  type: 'notification',
+                                  id: item.id,
+                                  title: item.title,
+                                });
                               }}
                               title="Hapus Notifikasi Ini"
                               className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
@@ -3426,6 +3435,8 @@ export default function AdminModules({
             <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-2xl border border-gray-100">
               {deleteModal.type === 'clear_all_schedules'
                 ? 'Apakah Anda yakin ingin MENGHAPUS SEMUA jadwal ibadah? Seluruh daftar jadwal akan dibersihkan dari sistem.'
+                : deleteModal.type === 'clear_all_notifications'
+                ? 'Apakah Anda yakin ingin MENGHAPUS SELURUH riwayat notifikasi terkirim? Notifikasi tidak akan lagi muncul di dashboard jemaat.'
                 : `Apakah Anda yakin ingin menghapus "${deleteModal.title || 'item ini'}"?`}
             </p>
 

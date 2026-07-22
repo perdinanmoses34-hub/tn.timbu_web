@@ -2490,11 +2490,10 @@ export default function DashboardJemaat({
                 {notifications.length > 0 && (
                   <button
                     onClick={() => {
-                      if (confirm('Bersihkan seluruh notifikasi di dashboard Anda?')) {
-                        MockDatabase.clearAllNotifications(currentUser);
-                        loadAllData();
-                        showToast('Seluruh notifikasi telah dibersihkan.', 'info');
-                      }
+                      MockDatabase.clearAllNotifications(currentUser);
+                      setActivePopupNotif(null);
+                      loadAllData();
+                      showToast('Seluruh notifikasi telah dibersihkan.', 'info');
                     }}
                     className="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer border border-red-200"
                   >

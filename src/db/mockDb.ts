@@ -1622,18 +1622,22 @@ export class MockDatabase {
     }
   }
 
-  static deleteNotification(id: string, actor: { id: string; name: string; role: Role }) {
+  static deleteNotification(id: string, actor?: { id: string; name: string; role: Role }) {
     const items = this.getNotifications();
-    const before = items.find((i) => i.id === id);
-    if (!before) return;
+    const targetId = String(id).trim();
+    const before = items.find((i) => String(i.id).trim() === targetId);
 
-    this.setStored('notifications', items.filter((i) => i.id !== id));
-    this.addLog(actor, 'DELETE_NOTIFICATION', JSON.stringify(before), undefined);
+    const safeActor = actor || { id: 'usr_admin', name: 'Admin', role: 'ADMIN' as Role };
+    this.setStored('notifications', items.filter((i) => String(i.id).trim() !== targetId));
+    if (before) {
+      this.addLog(safeActor, 'DELETE_NOTIFICATION', JSON.stringify(before), undefined);
+    }
   }
 
-  static clearAllNotifications(actor: { id: string; name: string; role: Role }) {
+  static clearAllNotifications(actor?: { id: string; name: string; role: Role }) {
+    const safeActor = actor || { id: 'usr_admin', name: 'Admin', role: 'ADMIN' as Role };
     this.setStored('notifications', []);
-    this.addLog(actor, 'CLEAR_ALL_NOTIFICATIONS', undefined, 'All notifications deleted');
+    this.addLog(safeActor, 'CLEAR_ALL_NOTIFICATIONS', undefined, 'All notifications deleted');
   }
 
   static getPrayerRequests(): PrayerRequest[] {
